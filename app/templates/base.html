@@ -1,0 +1,38 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AnnadattaMitra - AI Agriculture Platform{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-100 font-poppins">
+<header class="bg-green-700 text-white py-4 px-8 flex justify-between items-center">
+    <a href="/"><div class="text-2xl font-bold" href="/">AnnadattaMitra</div><a>
+    <nav class="space-x-4 hidden md:flex">
+        <a href="#about" class="hover:underline">About</a>
+        <a href="#features" class="hover:underline">Features</a>
+        <a href="/chatbot" class="hover:underline">AI Chatbot</a>
+        <a href="#contact" class="hover:underline">Contact</a>
+    </nav>
+    <button class="md:hidden text-3xl">&#9776;</button>
+</header>
+
+
+    <!-- Content Block -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <!-- templates/partials/footer.html -->
+<footer class="bg-green-700 text-white py-4 text-center">
+    <p>&copy; 2024 AnnadattaMitra. All rights reserved.</p>
+    <nav class="space-x-4 mt-2">
+        <a href="#" class="hover:underline">Privacy Policy</a>
+        <a href="#" class="hover:underline">Terms of Service</a>
+    </nav>
+</footer>
+</body>
+</html>

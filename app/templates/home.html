@@ -1,0 +1,33 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home - AnnadattaMitra{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-to-br from-green-400 to-green-700 text-white py-32 px-6 text-center">
+    <h1 class="text-4xl md:text-6xl font-bold leading-tight">Empower Farmers with AI-Driven Insights</h1>
+    <p class="mt-4 text-lg md:text-xl">Real-time market trends, crop advice, and direct access to buyers.</p>
+    <button class="mt-6 bg-yellow-400 text-green-800 px-6 py-3 text-lg font-bold rounded hover:bg-yellow-300">
+        Explore Platform
+    </button>
+</section>
+
+<section id="about" class="py-16 px-8 text-center">
+    <h2 class="text-3xl font-bold text-green-700 mb-4">About AnnadattaMitra</h2>
+    <p class="text-lg mb-8">A modern solution for farmers, using AI to bridge the gap between agriculture, market, and technology.</p>
+    <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white shadow-lg p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-green-800">AI-Powered Crop Advice</h3>
+            <p class="mt-2">Get personalized recommendations based on real-time weather and soil data.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-green-800">Direct Market Access</h3>
+            <p class="mt-2">Sell directly to buyers with transparent pricing and logistics support.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-green-800">Multilingual AI Chatbot</h3>
+            <p class="mt-2">Chat with LLaMA AI in your native language for quick insights.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block content %}
+<body class="bg-gradient-to-br from-gray-900 to-black text-white font-poppins">
+
+    <!-- Chat Interface Wrapper -->
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="w-[70%] max-w-4xl h-[85vh] bg-gradient-to-br from-green-800 via-gray-900 to-black shadow-2xl rounded-3xl overflow-hidden flex flex-col">
+
+            <!-- Header Section -->
+            <header class="bg-green-700 px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold tracking-wider">AnnadattaMitra AI</h1>
+                <button id="call-btn" class="bg-green-500 hover:bg-green-600 p-3 rounded-full shadow-lg transition">
+                    📞 Call Assistant
+                </button>
+            </header>
+
+            <!-- Chat Messages Section -->
+            <div id="chat-window" class="flex-1 p-6 space-y-4 overflow-y-auto custom-scroll">
+                <div class="message bot-message flex items-start">
+                    <img src="https://cdn-icons-png.flaticon.com/512/194/194938.png" class="avatar" alt="Bot" />
+                    <div class="ml-4 px-4 py-3 bg-gray-800 rounded-2xl max-w-[75%]">
+                        <p>Hello! I'm your farming assistant. 🌱 How can I assist you today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="bg-gray-800 p-4 border-t border-gray-700 flex items-center">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    class="w-full p-3 rounded-l-lg focus:outline-none bg-gray-700 text-white placeholder-gray-400" 
+                    placeholder="Type your message..."
+                    required 
+                />
+                <button 
+                    id="send-btn" 
+                    class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-r-lg transition text-white font-bold">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<style>
+    /* Custom Scrollbar Styling */
+.custom-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 10px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+/* Avatar Styling */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* Chat Bubble Animations */
+.bot-message {
+    animation: fadeInLeft 0.5s ease-out;
+}
+.user-message {
+    animation: fadeInRight 0.5s ease-out;
+}
+
+/* Animations for Message Bubbles */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
+
+<script>
+    const chatWindow = document.getElementById('chat-window');
+    const sendButton = document.getElementById('send-btn');
+    const userInput = document.getElementById('user-input');
+    const callButton = document.getElementById('call-btn');
+
+    // Scroll to bottom helper function
+    function scrollToBottom() {
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Add a new chat message (either bot or user)
+    function addMessage(content, sender = 'user') {
+        const message = document.createElement('div');
+        message.classList.add('message', `${sender}-message`, 'flex', 'items-start', 'mb-4');
+
+        if (sender === 'bot') {
+            message.innerHTML = `
+                <img src="https://cdn-icons-png.flaticon.com/512/194/194938.png" class="avatar" alt="Bot" />
+                <div class="ml-4 px-4 py-3 bg-gray-800 rounded-2xl max-w-[75%]">
+                    <p>${content}</p>
+                </div>
+            `;
+        } else {
+            message.innerHTML = `
+                <div class="ml-auto px-4 py-3 bg-green-700 rounded-2xl max-w-[75%]">
+                    <p>${content}</p>
+                </div>
+            `;
+        }
+
+        chatWindow.appendChild(message);
+        scrollToBottom();
+    }
+
+    // Handle message sending
+    sendButton.addEventListener('click', () => {
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            addMessage(userMessage, 'user');  // Add user's message
+            userInput.value = '';  // Clear input
+
+            // AJAX request to send message to Django backend
+            fetch('/chat_api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),  // CSRF token
+                },
+                body: JSON.stringify({ message: userMessage }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response) {
+                    addMessage(data.response, 'bot');  // Add bot's response
+                } else if (data.error) {
+                    addMessage(`Error: ${data.error}`, 'bot');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage('Error: Unable to connect to the server.', 'bot');
+            });
+        }
+    });
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Check if this cookie string begins with the name we want
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Handle call button click
+    callButton.addEventListener('click', () => {
+        alert('Calling your farming assistant...');
+    });
+</script>
+
+{% endblock content %}
