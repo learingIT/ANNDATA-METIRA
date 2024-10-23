@@ -16,6 +16,8 @@
             <div class="bg-gray-800 p-2 flex justify-end border-t border-gray-700">
                 <button id="lang-en" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg mx-2">English</button>
                 <button id="lang-hi" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg mx-2">हिन्दी</button>
+                <button id="lang-telugu" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg mx-2">తెలుగు</button>
+                <button id="lang-tamil" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg mx-2">தமிழ்</button>
             </div>
 
             <!-- Chat Messages Section -->
@@ -135,12 +137,16 @@
         chatWindow.appendChild(message);
         scrollToBottom();
     }
-    sendButton.addEventListener('click', () => {
+
+    userInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent the default action (like a form submit)
         const userMessage = userInput.value.trim();
         if (userMessage) {
             addMessage(userMessage, 'user');  // Add user's message
-            userInput.value = '';  // Clear input
+            userInput.value = '';  // Clear input   
 
+        }
             // AJAX request to send message to Django backend
             fetch('/chat_api/', {
                 method: 'POST',
