@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Farmer Registration</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Username Input -->
+        <div class="form-group">
+            <label for="username">Username</label>
+            {{ user_form.username }}  <!-- Render the username field -->
+            {% if user_form.username.errors %}
+                <div class="alert alert-danger">{{ user_form.username.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Email Input -->
+        <div class="form-group">
+            <label for="email">Email</label>
+            {{ user_form.email }}  <!-- Render the email field -->
+            {% if user_form.email.errors %}
+                <div class="alert alert-danger">{{ user_form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+            <label for="password">Password</label>
+            {{ user_form.password }}  <!-- Render the password field -->
+            {% if user_form.password.errors %}
+                <div class="alert alert-danger">{{ user_form.password.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- State Input -->
+        <div class="form-group position-relative">
+            <label for="state">State</label>
+            <input type="text" id="state" name="state" class="form-control" autocomplete="off" placeholder="Enter state...">
+            <div id="state-suggestions" class="suggestions"></div>
+        </div>
+        
+        <!-- District Input -->
+        <div class="form-group position-relative">
+            <label for="district">District</label>
+            <input type="text" id="district" name="district" class="form-control" autocomplete="off" disabled placeholder="Select a state first">
+            <div id="district-suggestions" class="suggestions"></div>
+        </div>
+        
+        <!-- City Input -->
+        <div class="form-group position-relative">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" class="form-control" autocomplete="off" disabled placeholder="Select a district first">
+            <div id="city-suggestions" class="suggestions"></div>
+        </div>
+        
+        <!-- Full Name Input -->
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your full name">
+        </div>
+        
+        <!-- Phone Number Input -->
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" name="phone" class="form-control" required placeholder="Enter your phone number">
+        </div>
+        
+        <!-- Profile Picture Upload -->
+        <div class="form-group">
+            <label for="profile_picture">Profile Picture</label>
+            <input type="file" id="profile_picture" name="profile_picture" class="form-control">
+        </div>
+        
+        <!-- Interests -->
+        <div class="form-group">
+            <label>Interests</label>
+            {{ farmer_form.interests }}  <!-- Render the interests field -->
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+
+    {% for message in messages %}
+        <div class="alert alert-warning mt-3">{{ message }}</div>
+    {% endfor %}
+</div>
+
+<!-- Load jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    function fetchSuggestions(inputField, suggestionBox, endpoint, extraParams = {}) {
+        $(inputField).on('input', function() {
+            let query = $(this).val();
+            let params = { 'query': query, ...extraParams };
+
+            if (query.length > 1) {
+                $.ajax({
+                    url: endpoint,
+                    data: params,
+                    success: function(data) {
+                        $(suggestionBox).empty(); // Clear previous suggestions
+                        // Populate suggestions based on the input field
+                        if (inputField === '#state') {
+                            data.states.forEach(function(state) {
+                                $(suggestionBox).append(`<div class="suggestion-item">${state}</div>`);
+                            });
+                        } else if (inputField === '#district') {
+                            data.districts.forEach(function(district) {
+                                $(suggestionBox).append(`<div class="suggestion-item">${district}</div>`);
+                            });
+                        } else if (inputField === '#city') {
+                            data.cities.forEach(function(city) {
+                                $(suggestionBox).append(`<div class="suggestion-item">${city}</div>`);
+                            });
+                        }
+
+                        // Show or hide the suggestions box
+                        if ($(suggestionBox).children().length > 0) {
+                            $(suggestionBox).show();
+                        } else {
+                            $(suggestionBox).hide();
+                        }
+                    }
+                });
+            } else {
+                $(suggestionBox).empty().hide(); // Hide suggestions if query is short
+            }
+        });
+
+        // On clicking a suggestion, fill the input and hide suggestions
+        $(suggestionBox).on('click', '.suggestion-item', function() {
+            $(inputField).val($(this).text());
+            $(suggestionBox).empty().hide();
+
+            // Enable the next input based on the current selection
+            if (inputField === '#state') {
+                $('#district').prop('disabled', false).focus(); // Enable district input
+                $('#district-suggestions').empty().hide(); // Clear previous suggestions
+                $('#city').val('').prop('disabled', true); // Disable city input
+            } else if (inputField === '#district') {
+                $('#city').prop('disabled', false).focus(); // Enable city input
+                $('#city-suggestions').empty().hide(); // Clear previous suggestions
+            }
+        });
+    }
+
+    // Fetch suggestions for each input
+    fetchSuggestions('#state', '#state-suggestions', '{% url "get_suggestions" %}');
+    fetchSuggestions('#district', '#district-suggestions', '{% url "get_suggestions" %}', { state: function() { return $('#state').val(); } });
+    fetchSuggestions('#city', '#city-suggestions', '{% url "get_suggestions" %}', { district: function() { return $('#district').val(); } });
+});
+</script>
+
+<style>
+    /* General Styles */
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        color: #343a40;
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    .suggestions {
+        border: 1px solid #ccc;
+        background: #fff;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        position: absolute;
+        width: 100%;
+        z-index: 1000;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Button Styles */
+    .btn-register {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-register:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    /* Alert Styles */
+    .alert {
+        margin-top: 20px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}

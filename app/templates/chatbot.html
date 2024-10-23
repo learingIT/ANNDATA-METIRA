@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<body class="bg-gradient-to-br from-gray-900 to-black text-white font-poppins">
+<body class="bg-gradient-to-br from-gray-700 to-black text-white font-poppins">
 
     <!-- Chat Interface Wrapper -->
     <div class="min-h-screen flex items-center justify-center">
-        <div class="w-[70%] max-w-4xl h-[85vh] bg-gradient-to-br from-green-800 via-gray-900 to-black shadow-2xl rounded-3xl overflow-hidden flex flex-col">
+        <div class="w-[70%] max-w-3xl h-[75vh] bg-gradient-to-br from-green-800 via-gray-900 to-black shadow-2xl rounded-3xl overflow-hidden flex flex-col">
 
             <!-- Header Section -->
             <header class="bg-green-700 px-6 py-4 flex justify-between items-center">
@@ -13,6 +13,10 @@
                     📞 Call Assistant
                 </button>
             </header>
+            <div class="bg-gray-800 p-2 flex justify-end border-t border-gray-700">
+                <button id="lang-en" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg mx-2">English</button>
+                <button id="lang-hi" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg mx-2">हिन्दी</button>
+            </div>
 
             <!-- Chat Messages Section -->
             <div id="chat-window" class="flex-1 p-6 space-y-4 overflow-y-auto custom-scroll">
@@ -24,7 +28,6 @@
                 </div>
             </div>
 
-            <!-- Input Section -->
             <div class="bg-gray-800 p-4 border-t border-gray-700 flex items-center">
                 <input 
                     type="text" 
@@ -48,54 +51,54 @@
 
 <style>
     /* Custom Scrollbar Styling */
-.custom-scroll::-webkit-scrollbar {
-    width: 8px;
-}
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: #4b5563;
-    border-radius: 10px;
-}
-.custom-scroll::-webkit-scrollbar-track {
-    background: #1f2937;
-}
-
-/* Avatar Styling */
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-/* Chat Bubble Animations */
-.bot-message {
-    animation: fadeInLeft 0.5s ease-out;
-}
-.user-message {
-    animation: fadeInRight 0.5s ease-out;
-}
-
-/* Animations for Message Bubbles */
-@keyframes fadeInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
+    .custom-scroll::-webkit-scrollbar {
+        width: 8px;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 10px;
     }
-}
+    .custom-scroll::-webkit-scrollbar-track {
+        background: #1f2937;
+    }
 
-@keyframes fadeInRight {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
+    /* Avatar Styling */
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+
+    /* Chat Bubble Animations */
+    .bot-message {
+        animation: fadeInLeft 0.5s ease-out;
     }
-}
+    .user-message {
+        animation: fadeInRight 0.5s ease-out;
+    }
+
+    /* Animations for Message Bubbles */
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 </style>
 
 <script>
@@ -132,8 +135,6 @@
         chatWindow.appendChild(message);
         scrollToBottom();
     }
-
-    // Handle message sending
     sendButton.addEventListener('click', () => {
         const userMessage = userInput.value.trim();
         if (userMessage) {
